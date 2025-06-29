@@ -1,8 +1,4 @@
-Ok, ho capito\! Renderò il tutorial ancora più completo, aggiungendo le istruzioni per scaricare il template da GitHub, ampliando la sezione sulle skill, spiegando come aggiungere una nuova sezione "Curiosità" e, cosa fondamentale, includendo la richiesta di mantenere i diritti d'autore nel footer.
 
-Ecco la versione estesa del file Markdown:
-
-````markdown
 # Portfolio Professionale - Template Moderno
 
 Questo è un template di portfolio professionale moderno, progettato per essere facilmente personalizzabile e mostrare le tue competenze, progetti ed esperienze in modo accattivante.
