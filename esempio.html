@@ -1,0 +1,1585 @@
+<!DOCTYPE html>
+
+<html lang="it">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="assets/images/profile.jpg" rel="icon" type="image/png"/>
+<title>Lorem Ipsum - Portfolio Esempio</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&amp;family=Oxanium:wght@400;600;800&amp;display=swap" rel="stylesheet"/>
+<script src="https://unpkg.com/three@0.152.2/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<style>
+        :root {
+            --bg-dark: #0a0a0a; /* Nero profondo */
+            --text-light: #F0F0F0; /* Grigio chiaro */
+            --primary-accent: #00FF99; /* Verde neon */
+            --secondary-accent: #00BFFF; /* Blu chiaro */
+            --border-color: #222222; /* Grigio scuro per bordi */
+            --shadow-color-primary: rgba(0, 255, 153, 0.4); /* Ombra per verde neon */
+            --shadow-color-secondary: rgba(0, 191, 255, 0.4); /* Ombra per blu chiaro */
+        }
+
+        /* --- Base & Reset --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: var(--bg-dark);
+            color: var(--text-light);
+            font-family: 'Outfit', sans-serif;
+            overflow-x: hidden; /* Previene scroll orizzontale non desiderato */
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        button {
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            padding: 0;
+        }
+
+        /* --- Navbar --- */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 5%;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--border-color);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 100;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+        }
+
+        .logo-container img {
+            width: 38px;
+            height: 38px;
+            object-fit: cover;
+            border-radius: 50%;
+            box-shadow: 0 0 12px var(--primary-accent);
+        }
+
+        .logo {
+            font-family: 'Oxanium', sans-serif;
+            font-size: clamp(1.3rem, 2vw + 0.4rem, 1.7rem);
+            font-weight: 800;
+            color: var(--primary-accent);
+            text-shadow: 0 0 8px rgba(0, 255, 153, 0.7);
+        }
+
+        .nav-links {
+            display: flex;
+        }
+
+        .nav-links a {
+            margin-left: clamp(1.2rem, 2.5vw, 2rem);
+            text-decoration: none;
+            color: inherit;
+            font-weight: 600;
+            transition: 0.3s ease-in-out;
+            position: relative;
+            font-size: clamp(0.9rem, 1.4vw, 1.05rem);
+            padding: 0.5rem 0;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 3px;
+            bottom: -7px;
+            left: 0;
+            background-color: var(--secondary-accent);
+            transition: width 0.3s ease-in-out;
+        }
+
+        .nav-links a:hover {
+            color: var(--secondary-accent);
+        }
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .hamburger {
+            z-index: 102 !important;
+            display: none;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 25px;
+            width: 30px;
+            cursor: pointer;
+            z-index: 101;
+        }
+
+        .hamburger span {
+            display: block;
+            width: 100%;
+            height: 3px;
+            background: var(--text-light);
+            border-radius: 3px;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: translateY(11px) rotate(45deg);
+        }
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+        .hamburger.active span:nth-child(3) {
+            transform: translateY(-11px) rotate(-45deg);
+        }
+
+        /* Media Queries per Navbar (Responsive Mobile) - NUOVA REVISIONE PER MENU A TENDINA */
+        @media(max-width:768px) {
+            .nav-links {
+                display: flex;
+                flex-direction: column;
+                position: absolute; /* Posizionato relativamente al genitore 'nav' */
+                top: 100%; /* Sotto la nav principale */
+                left: 0;
+                width: 100%; /* Larga quanto la nav principale */
+                max-height: 0; /* Inizialmente nascosta (altezza zero) */
+                overflow: hidden; /* Nasconde il contenuto in eccesso */
+                background: rgba(10, 10, 10, 0.98); /* Sfondo per il menu a tendina */
+                border-top: 1px solid var(--border-color); /* Bordo superiore opzionale */
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+                transition: max-height 0.4s ease-out, opacity 0.4s ease-out; /* Transizione fluida */
+                opacity: 0; /* Inizialmente trasparente */
+                z-index: 98; /* Sotto la nav principale ma sopra il contenuto della pagina */
+                align-items: flex-start; /* Allinea i link a sinistra */
+                padding: 0 1.5rem; /* Aggiunge padding interno al menu */
+            }
+
+            .nav-links.nav-active {
+                max-height: 500px; /* Altezza sufficiente per mostrare tutti i link */
+                opacity: 1; /* Completamente visibile */
+            }
+
+            .nav-links a {
+                width: 100%; /* Rende i link larghi quanto il menu a tendina */
+                padding: 0.8rem 0; /* Padding ridotto per link compatti */
+                text-align: left; /* Allinea il testo a sinistra */
+                font-size: 1.1rem; /* Dimensione font più piccola */
+                margin: 0; /* Rimuove margini verticali tra i link */
+                border-bottom: 1px solid rgba(255,255,255,0.05); /* Separatore tra i link */
+            }
+            .nav-links a:last-child {
+                border-bottom: none; /* Nessun bordo sull'ultimo link */
+            }
+
+            .hamburger {
+                z-index: 101; /* Assicura che l'hamburger sia sopra i nav-links ma sotto la nav fissa */
+                display: flex;
+            }
+            
+            /* Rimuovi effetti di blur/nascondimento del body, poiché non è più un overlay a schermo intero */
+            body.no-scroll {
+                overflow: auto; /* Permette lo scroll */
+            }
+            body.no-scroll > *:not(nav):not(#preloader) {
+                filter: none;
+                pointer-events: auto;
+            }
+            body.no-scroll header {
+                visibility: visible;
+            }
+
+            /* Importante: la nav genitore deve essere position: relative per i figli assoluti */
+            /* La nav è già fixed, ma un elemento fixed può anche essere un contenitore di posizionamento */
+            nav {
+                position: relative; /* Rende la nav un contenitore di posizionamento per .nav-links */
+            }
+        }
+
+        /* --- Header / Hero Section --- */
+        header {
+            position: relative;
+            padding: clamp(7rem, 14vh, 9rem) 5% clamp(2rem, 4vh, 3rem);
+            text-align: center;
+            z-index: 1;
+            overflow: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #bg-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.2;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            margin-bottom: 4rem; 
+        }
+
+        .title {
+            font-family: 'Oxanium', sans-serif;
+            font-size: clamp(2.2rem, 5.5vw + 0.8rem, 4.5rem);
+            font-weight: 800;
+            color: var(--text-light);
+            margin-bottom: 1.2rem;
+            text-shadow: 0 0 18px var(--shadow-color-primary);
+        }
+
+        .highlight {
+            color: var(--primary-accent);
+        }
+
+        .subtitle {
+            font-family: 'Oxanium', sans-serif;
+            font-size: clamp(1.4rem, 2.8vw + 0.4rem, 2.3rem);
+            font-weight: 600;
+            margin-top: 0.8rem;
+            margin-bottom: 2.5rem;
+            color: var(--text-light);
+            text-shadow: 0 0 12px var(--shadow-color-secondary);
+        }
+
+        .description {
+            max-width: 700px;
+            margin: 1.5rem auto;
+            opacity: 0.9;
+            text-align: center;
+            line-height: 1.7;
+            font-size: clamp(0.95rem, 1.1vw + 0.1rem, 1.1rem);
+            margin-bottom: clamp(2.5rem, 5vh, 4rem); 
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1.1rem 2.2rem;
+            border-radius: 5px;
+            font-size: clamp(1rem, 1.4vw + 0.1rem, 1.3rem);
+            font-weight: bold;
+            color: var(--bg-dark);
+            background: var(--primary-accent);
+            text-decoration: none;
+            transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+            margin-top: 1.8rem;
+            box-shadow: 0 0 18px var(--shadow-color-primary);
+            border: 2px solid var(--primary-accent);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            white-space: nowrap;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .cta-button:hover, .cta-button:focus {
+            background: var(--secondary-accent);
+            transform: translateY(-4px);
+            box-shadow: 0 0 22px var(--shadow-color-secondary);
+            border-color: var(--secondary-accent);
+        }
+
+        .separator {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary-accent), var(--secondary-accent), transparent);
+            margin-top: 6rem; 
+            margin-bottom: clamp(3rem, 7vh, 5rem);
+            width: 100%;
+            position: relative;
+            z-index: 2;
+            opacity: 0.6;
+            box-shadow: 0 0 12px var(--shadow-color-primary), 0 0 12px var(--shadow-color-secondary);
+        }
+
+        /* --- Sezioni Contenuto Generiche --- */
+        section {
+            padding: clamp(3.5rem, 7vh, 5.5rem) 5%;
+            position: relative;
+            z-index: 2;
+            text-align: center;
+        }
+        
+        h2 {
+            font-family: 'Oxanium', sans-serif;
+            font-size: clamp(1.8rem, 3.5vw + 0.4rem, 3rem);
+            font-weight: 800;
+            margin-bottom: clamp(1.8rem, 4vh, 3rem);
+            color: var(--text-light);
+            text-shadow: 0 0 12px var(--shadow-color-primary);
+        }
+
+        /* --- About Section --- */
+        .about-section .description {
+            margin-bottom: 3.5rem; /* Spazio specifico per la description di About */
+        }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: clamp(1.2rem, 2.5vw, 2rem);
+            margin: 0 auto;
+            max-width: 1100px;
+            background: rgba(15, 15, 15, 0.8);
+            padding: clamp(1.8rem, 3.5vw, 2.8rem);
+            border-radius: 8px;
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-color);
+        }
+
+        .about-item {
+            background: #121212;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: clamp(1.3rem, 2.8vw, 2rem);
+            text-align: center;
+            opacity: 0; /* Imposta l'opacità a 0 per l'animazione di entrata */
+            transform: translateY(30px); /* Sposta in basso per l'animazione */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        /* FALLBACK CSS AGGIORNATO: Rende gli elementi sempre visibili se GSAP non li anima */
+        .about-section .about-item,
+        .about-section.gsap-active .about-item {
+            opacity: 1; /* Default a visibile */
+            transform: translateY(0); /* Default a posizione normale */
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out, box-shadow 0.3s ease; /* Aggiunto transition per fallback smooth */
+        }
+        .about-section.gsap-active .about-item {
+            /* Se GSAP si attiva, ripristina lo stato iniziale per l'animazione */
+            opacity: 0; 
+            transform: translateY(30px);
+        }
+        /* Fine FALLBACK */
+
+        .about-item:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 0 20px var(--shadow-color-secondary);
+        }
+
+        .about-value {
+            font-family: 'Oxanium', sans-serif;
+            font-size: clamp(2.2rem, 3.5vw + 0.4rem, 3rem);
+            color: var(--primary-accent);
+            font-weight: 800;
+            margin-bottom: 0.7rem;
+            text-shadow: 0 0 10px rgba(0, 255, 153, 0.7);
+        }
+
+        .about-label {
+            font-size: clamp(0.95rem, 1.1vw + 0.1rem, 1.1rem);
+            color: #b0b0b0;
+        }
+
+        /* --- Skills Section --- */
+        .skills-section {
+            background: var(--bg-dark);
+        }
+        .skills-section .description {
+            margin-bottom: 3.5rem; /* Spazio specifico per la description di Skills */
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: clamp(1.2rem, 2.5vw, 2rem);
+            margin: 0 auto;
+            max-width: 1100px;
+        }
+
+        .skill-card {
+            background: #121212;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: clamp(1.3rem, 2.8vw, 2rem);
+            box-shadow: 0 0 18px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            opacity: 0; /* Imposta l'opacità a 0 per l'animazione di entrata */
+            transform: translateY(30px); /* Sposta in basso per l'animazione */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+         /* FALLBACK CSS AGGIORNATO */
+        .skills-section .skill-card,
+        .skills-section.gsap-active .skill-card {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out, box-shadow 0.3s ease;
+        }
+        .skills-section.gsap-active .skill-card {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        /* Fine FALLBACK */
+
+        .skill-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 0 25px var(--shadow-color-primary);
+        }
+
+        .skill-card i {
+            color: var(--secondary-accent);
+            font-size: clamp(2.5rem, 4vw, 3.5rem);
+            margin-bottom: 1rem;
+            text-shadow: 0 0 10px rgba(0, 191, 255, 0.6);
+        }
+
+        .skill-card h3 {
+            font-family: 'Oxanium', sans-serif;
+            color: var(--primary-accent);
+            font-size: clamp(1.2rem, 1.6vw + 0.2rem, 1.5rem);
+            font-weight: 700;
+            margin-bottom: 0.8rem;
+        }
+
+        .skill-card p {
+            margin-top: 0.5rem;
+            color: #b0b0b0;
+            font-size: clamp(0.9rem, 1vw + 0.1rem, 1.05rem);
+            line-height: 1.7;
+        }
+
+        /* --- Projects Section --- */
+        .projects-section {
+            background: rgba(15, 15, 15, 0.8);
+            border-radius: 8px;
+            text-align: center;
+            margin: 0 auto;
+            max-width: 1200px;
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-color);
+        }
+        .projects-section .description {
+            margin-bottom: 3.5rem; /* Spazio specifico per la description di Projects */
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: clamp(1.5rem, 3vw, 2.5rem);
+            margin-top: clamp(2rem, 4vh, 3.5rem);
+        }
+
+        .project-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 0 18px rgba(0,0,0,0.4);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            opacity: 0; /* Imposta l'opacità a 0 per l'animazione di entrata */
+            transform: translateY(30px); /* Sposta in basso per l'animazione */
+        }
+        /* FALLBACK CSS AGGIORNATO */
+        .projects-section .project-item,
+        .projects-section.gsap-active .project-item {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out, box-shadow 0.3s ease;
+        }
+        .projects-section.gsap-active .project-item {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        /* Fine FALLBACK */
+
+        .project-item:hover {
+            transform: translateY(-8px) scale(1.01);
+            box-shadow: 0 0 30px var(--shadow-color-primary);
+        }
+        .project-item img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.3s ease;
+        }
+        .project-item:hover img {
+            transform: scale(1.03);
+        }
+        .project-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(to top, rgba(0,0,0,0.85), rgba(0,0,0,0));
+            color: var(--text-light);
+            padding: 1rem;
+            font-size: 1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .project-item:hover .project-overlay {
+            opacity: 1;
+        }
+        .project-overlay h3 {
+            margin: 0;
+            font-family: 'Oxanium', sans-serif;
+            color: var(--secondary-accent);
+            font-size: clamp(1.1rem, 1.3vw + 0.2rem, 1.3rem);
+        }
+        .project-overlay p {
+            margin: 0.5rem 0 0;
+            font-size: clamp(0.85rem, 0.95vw + 0.1rem, 1rem);
+            color: #c0c0c0;
+        }
+        .project-overlay .view-project-btn {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.6rem 1.2rem;
+            background: var(--primary-accent);
+            color: var(--bg-dark);
+            border-radius: 4px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+        .project-overlay .view-project-btn:hover {
+            background: var(--secondary-accent);
+        }
+
+        /* --- Testimonials Section --- */
+        .testimonials-section {
+            background: var(--bg-dark);
+        }
+        .testimonials-section .description {
+            margin-bottom: 3.5rem; /* Spazio specifico per la description di Testimonials */
+        }
+        .testimonial-carousel {
+            display: flex;
+            overflow-x: auto; 
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            padding: 0 1rem 1rem; 
+            gap: 1.5rem;
+            margin: 0 auto;
+            max-width: 900px;
+            box-sizing: border-box;
+            justify-content: flex-start;
+            scroll-behavior: smooth;
+        }
+        /* Nasconde la scrollbar per diversi browser */
+        .testimonial-carousel::-webkit-scrollbar {
+            display: none; 
+        }
+        .testimonial-carousel {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+
+        .testimonial-card {
+            flex: 0 0 auto; 
+            min-width: clamp(280px, 70vw, 400px); /* Larghezza minima per le card */
+            width: clamp(280px, 70vw, 400px); /* Larghezza preferita per le card */
+            background: rgba(15, 15, 15, 0.8);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+            text-align: left;
+            scroll-snap-align: start;
+            opacity: 0; /* Imposta l'opacità a 0 per l'animazione di entrata */
+            transform: translateY(30px); /* Sposta in basso per l'animazione */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-sizing: border-box; 
+        }
+        /* FALLBACK CSS AGGIORNATO */
+        .testimonials-section .testimonial-card,
+        .testimonials-section.gsap-active .testimonial-card {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out, box-shadow 0.3s ease;
+        }
+        .testimonials-section.gsap-active .testimonial-card {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        /* Fine FALLBACK */
+
+        .testimonial-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 0 25px var(--shadow-color-secondary);
+        }
+
+        .testimonial-quote {
+            font-style: italic;
+            margin-bottom: 1.5rem;
+            color: #c0c0c0;
+            font-size: clamp(0.95rem, 1.1vw, 1.1rem);
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            margin-top: 1.5rem;
+            gap: 1rem;
+            color: var(--text-light);
+        }
+
+        .testimonial-author img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary-accent);
+            box-shadow: 0 0 10px var(--shadow-color-primary);
+        }
+
+        .author-details strong {
+            display: block;
+            font-size: clamp(1.1rem, 1.3vw, 1.25rem);
+            color: var(--primary-accent);
+            font-family: 'Oxanium', sans-serif;
+        }
+
+        .author-details span {
+            font-size: 0.9rem;
+            color: #a0a0a0;
+        }
+
+        .carousel-nav {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+        .carousel-nav button {
+            background: var(--border-color);
+            color: var(--text-light);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s ease, color 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        .carousel-nav button:hover {
+            background: var(--primary-accent);
+            color: var(--bg-dark);
+            box-shadow: 0 4px 12px var(--shadow-color-primary);
+        }
+
+        /* --- FAQ Section --- */
+        .faq-section {
+            background: rgba(15, 15, 15, 0.8);
+            border-radius: 8px;
+            text-align: center;
+            margin: 0 auto;
+            max-width: 900px;
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-color);
+        }
+        .faq-section .description {
+            margin-bottom: 3.5rem; /* Spazio specifico per la description di FAQ */
+        }
+
+        .faq-container {
+            padding: 0 1rem; 
+        }
+
+        .faq-item {
+            background: #121212;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            opacity: 0; /* Imposta l'opacità a 0 per l'animazione di entrata */
+            transform: translateY(30px); /* Sposta in basso per l'animazione */
+            text-align: left;
+            overflow: hidden; 
+            transition: box-shadow 0.3s ease;
+        }
+        /* FALLBACK CSS AGGIORNATO */
+        .faq-section .faq-item,
+        .faq-section.gsap-active .faq-item {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out, box-shadow 0.3s ease;
+        }
+        .faq-section.gsap-active .faq-item {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        /* Fine FALLBACK */
+
+        .faq-item:last-child {
+            margin-bottom: 0; /* Rimuove il margine sull'ultimo elemento */
+        }
+        .faq-item:hover {
+            box-shadow: 0 0 15px var(--shadow-color-primary);
+        }
+
+        .faq-question {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2rem 1.5rem;
+            font-size: clamp(1rem, 1.2vw + 0.1rem, 1.15rem);
+            font-weight: 600;
+            color: var(--primary-accent);
+            cursor: pointer;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+        .faq-question:hover {
+            background: #181818;
+            color: var(--secondary-accent);
+        }
+
+        .faq-question i {
+            margin-left: 1rem;
+            transition: transform 0.3s ease;
+        }
+        .faq-question.active i {
+            transform: rotate(180deg);
+        }
+
+        .faq-answer {
+            max-height: 0; /* Inizialmente chiuso */
+            overflow: hidden;
+            transition: max-height 0.4s ease-out, padding 0.4s ease-out; 
+            color: #c0c0c0;
+            font-size: clamp(0.9rem, 1vw + 0.1rem, 1.05rem);
+            padding: 0 1.5rem; /* Padding laterale sempre presente */
+        }
+        .faq-answer.open {
+            max-height: 500px; /* Valore sufficientemente grande per contenere il contenuto */
+            padding-bottom: 1.5rem; /* Aggiunto padding inferiore solo quando aperta */
+        }
+        .faq-answer p { 
+            margin-top: 0;
+            margin-bottom: 0; /* Elimina margini interni che creano spazio extra */
+        }
+
+
+        /* --- Contact Section --- */
+        .contact-section {
+            background: var(--bg-dark);
+            padding-bottom: clamp(3rem, 6vh, 5rem);
+        }
+        .contact-section .description {
+            margin-bottom: 3.5rem; /* Spazio specifico per la description di Contact */
+        }
+        .contact-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        .contact-buttons .cta-button {
+            margin: 0;
+        }
+        .contact-buttons .cta-button i {
+            margin-right: 0.5rem;
+        }
+
+        /* --- Footer --- */
+        footer {
+            text-align: center;
+            font-size: 0.9rem;
+            color: #888;
+            padding: 2rem 5%;
+            border-top: 1px solid var(--border-color);
+            margin-top: clamp(2.5rem, 5vh, 4rem);
+        }
+
+        footer a {
+            color: var(--primary-accent);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        footer a:hover {
+            color: var(--secondary-accent);
+        }
+
+        /* --- Preloader --- */
+        #preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 100%;
+            background: var(--bg-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+        .fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* --- Pulsante Back To Top --- */
+        #backToTop {
+            display: none;
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 998;
+            background: var(--primary-accent);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            color: var(--bg-dark);
+            font-size: 26px;
+            cursor: pointer;
+            box-shadow: 0 0 12px var(--shadow-color-primary);
+            transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+        #backToTop:hover, #backToTop:focus {
+            background: var(--secondary-accent);
+            transform: translateY(-4px);
+            box-shadow: 0 0 18px var(--shadow-color-secondary);
+        }
+    
+/* Fallback for content visibility */
+.about-item,
+.skill-card,
+.project-item,
+.testimonial-card,
+.faq-item {
+    opacity: 1 !important;
+    transform: none !important;
+}
+
+</style>
+</head>
+<body>
+<div id="preloader">
+<div style="display:flex;flex-direction:column;align-items:center;text-align:center;">
+<img alt="Caricamento" src="assets/images/profile.jpg" style="width:100px; border-radius:50%; box-shadow: 0 0 20px var(--primary-accent);"/>
+<p style="color:var(--text-light);margin-top:2rem;font-size:1.4rem; font-family: 'Oxanium', sans-serif; text-shadow: 0 0 10px var(--primary-accent);">Caricamento Portfolio...</p>
+</div>
+</div>
+<nav>
+<div class="logo-container">
+<img alt="Logo Placeholder" src="assets/images/profile.jpg"/>
+<div class="logo">Lorem Ipsum</div>
+</div>
+<div class="hamburger" id="hamburger">
+<span></span>
+<span></span>
+<span></span>
+</div>
+<div class="nav-links" id="nav-links">
+<a class="nav-link-item" href="#home">Home</a>
+<a class="nav-link-item" href="#about">Chi Siamo</a>
+<a class="nav-link-item" href="#skills">Servizi</a>
+<a class="nav-link-item" href="#projects">Portfolio</a>
+<a class="nav-link-item" href="#testimonials">Recensioni</a>
+<a class="nav-link-item" href="#faq">FAQ</a>
+<a class="nav-link-item" href="#contact">Contatti</a>
+</div>
+</nav>
+<header id="home">
+<canvas id="bg-canvas"></canvas>
+<div class="hero-content">
+<div class="title">Lorem ipsum dolor sit <span class="highlight">amet.</span></div>
+<div class="subtitle">Ego sum <span class="highlight"><span id="typed-text"></span></span></div>
+<p class="description">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+            </p>
+<a class="cta-button" href="#projects">Scopri di Più</a>
+</div>
+<div class="separator"></div>
+</header>
+<section class="about-section gsap-active" id="about">
+<h2>Chi <span class="highlight">Siamo</span></h2>
+<p class="description">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        </p>
+<div class="about-grid">
+<div class="about-item">
+<div class="about-value">10+</div>
+<div class="about-label">Anni di Attività</div>
+</div>
+<div class="about-item">
+<div class="about-value">200+</div>
+<div class="about-label">Progetti Realizzati</div>
+</div>
+<div class="about-item">
+<div class="about-value">99%</div>
+<div class="about-label">Clienti Soddisfatti</div>
+</div>
+<div class="about-item">
+<div class="about-value">Innovazione</div>
+<div class="about-label">Costante Ricerca</div>
+</div>
+</div>
+</section>
+<section class="skills-section gsap-active" id="skills">
+<h2>I Nostri <span class="highlight">Servizi</span></h2>
+<p class="description">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+        </p>
+<div class="skills-grid">
+<div class="skill-card">
+<i class="fas fa-laptop-code"></i>
+<h3>Sviluppo Web</h3>
+<p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+</div>
+<div class="skill-card">
+<i class="fas fa-palette"></i>
+<h3>Web Design</h3>
+<p>Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+</div>
+<div class="skill-card">
+<i class="fas fa-mobile-alt"></i>
+<h3>App Mobile</h3>
+<p>Velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed do eiusmod tempor incididunt ut labore.</p>
+</div>
+<div class="skill-card">
+<i class="fas fa-search-dollar"></i>
+<h3>SEO &amp; Marketing</h3>
+<p>Reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Quis nostrud exercitation ullamco.</p>
+</div>
+<div class="skill-card">
+<i class="fas fa-film"></i>
+<h3>Produzione Video</h3>
+<p>Labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate.</p>
+</div>
+<div class="skill-card">
+<i class="fas fa-cloud"></i>
+<h3>Cloud Solutions</h3>
+<p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.</p>
+</div>
+</div>
+</section>
+<section class="projects-section gsap-active" id="projects">
+<h2>Il Nostro <span class="highlight">Portfolio</span></h2>
+<p class="description">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.
+        </p>
+<div class="projects-grid">
+<div class="project-item">
+<img alt="Progetto Esempio 1" src="assets/images/project1.jpg"/>
+<div class="project-overlay">
+<h3>Progetto Alpha</h3>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut enim ad minim veniam.</p>
+<a class="view-project-btn" href="https://www.example.com/project1" target="_blank">Vedi Progetto</a>
+</div>
+</div>
+<div class="project-item">
+<img alt="Progetto Esempio 2" src="assets/images/project2.jpg"/>
+<div class="project-overlay">
+<h3>Progetto Beta</h3>
+<p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+<a class="view-project-btn" href="https://www.example.com/project2" target="_blank">Vedi Progetto</a>
+</div>
+</div>
+<div class="project-item">
+<img alt="Progetto Esempio 3" src="assets/images/project3.jpg"/>
+<div class="project-overlay">
+<h3>Progetto Gamma</h3>
+<p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+<a class="view-project-btn" href="https://www.example.com/project3" target="_blank">Vedi Progetto</a>
+</div>
+</div>
+<div class="project-item">
+<img alt="Progetto Esempio 4" src="https://via.placeholder.com/400x220?text=Progetto+4"/>
+<div class="project-overlay">
+<h3>Progetto Delta</h3>
+<p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.</p>
+<a class="view-project-btn" href="https://www.example.com/project4" target="_blank">Vedi Progetto</a>
+</div>
+</div>
+<div class="project-item">
+<img alt="Progetto Esempio 5" src="https://via.placeholder.com/400x220?text=Progetto+5"/>
+<div class="project-overlay">
+<h3>Progetto Epsilon</h3>
+<p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos.</p>
+<a class="view-project-btn" href="https://www.example.com/project5" target="_blank">Vedi Progetto</a>
+</div>
+</div>
+<div class="project-item">
+<img alt="Progetto Esempio 6" src="https://via.placeholder.com/400x220?text=Progetto+6"/>
+<div class="project-overlay">
+<h3>Progetto Zeta</h3>
+<p>Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit.</p>
+<a class="view-project-btn" href="https://www.example.com/project6" target="_blank">Vedi Progetto</a>
+</div>
+</div>
+</div>
+</section>
+<section class="testimonials-section gsap-active" id="testimonials">
+<h2>Cosa Dicono i <span class="highlight">Nostri Clienti</span></h2>
+<p class="description">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        </p>
+<div class="testimonial-carousel">
+<div class="testimonial-card">
+<p class="testimonial-quote">"Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."</p>
+<div class="testimonial-author">
+<img alt="Testimonial 1" src="https://via.placeholder.com/60x60?text=C1"/>
+<div class="author-details">
+<strong>Nome Cognome 1</strong>
+<span>Ruolo, Azienda</span>
+</div>
+</div>
+</div>
+<div class="testimonial-card">
+<p class="testimonial-quote">"Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium."</p>
+<div class="testimonial-author">
+<img alt="Testimonial 2" src="https://via.placeholder.com/60x60?text=C2"/>
+<div class="author-details">
+<strong>Nome Cognome 2</strong>
+<span>Ruolo, Azienda</span>
+</div>
+</div>
+</div>
+<div class="testimonial-card">
+<p class="testimonial-quote">"Totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit."</p>
+<div class="testimonial-author">
+<img alt="Testimonial 3" src="https://via.placeholder.com/60x60?text=C3"/>
+<div class="author-details">
+<strong>Nome Cognome 3</strong>
+<span>Ruolo, Azienda</span>
+</div>
+</div>
+</div>
+<div class="testimonial-card">
+<p class="testimonial-quote">"Veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt."</p>
+<div class="testimonial-author">
+<img alt="Testimonial 4" src="https://via.placeholder.com/60x60?text=C4"/>
+<div class="author-details">
+<strong>Nome Cognome 4</strong>
+<span>Ruolo, Azienda</span>
+</div>
+</div>
+</div>
+</div>
+<div class="carousel-nav">
+<button id="prevTestimonial"><i class="fas fa-chevron-left"></i></button>
+<button id="nextTestimonial"><i class="fas fa-chevron-right"></i></button>
+</div>
+</section>
+<section class="faq-section gsap-active" id="faq">
+<h2>Domande <span class="highlight">Frequenti</span></h2>
+<p class="description">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        </p>
+<div class="faq-container">
+<div class="faq-item">
+<div class="faq-question">
+                    Domanda Frequente 1?
+                    <i class="fas fa-plus"></i> </div>
+<div class="faq-answer">
+<p>Risposta alla domanda 1: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+</div>
+</div>
+<div class="faq-item">
+<div class="faq-question">
+                    Domanda Frequente 2?
+                    <i class="fas fa-plus"></i>
+</div>
+<div class="faq-answer">
+<p>Risposta alla domanda 2: Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+</div>
+</div>
+<div class="faq-item">
+<div class="faq-question">
+                    Domanda Frequente 3?
+                    <i class="fas fa-plus"></i>
+</div>
+<div class="faq-answer">
+<p>Risposta alla domanda 3: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+</div>
+</div>
+<div class="faq-item">
+<div class="faq-question">
+                    Domanda Frequente 4?
+                    <i class="fas fa-plus"></i>
+</div>
+<div class="faq-answer">
+<p>Risposta alla domanda 4: Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.</p>
+</div>
+</div>
+<div class="faq-item">
+<div class="faq-question">
+                    Domanda Frequente 5?
+                    <i class="fas fa-plus"></i>
+</div>
+<div class="faq-answer">
+<p>Risposta alla domanda 5: Totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit.</p>
+</div>
+</div>
+</div>
+</section>
+<section class="contact-section" id="contact">
+<h2>Contattaci <span class="highlight">Oggi</span></h2>
+<p class="description">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.
+        </p>
+<div class="contact-buttons">
+<a class="cta-button" href="mailto:info@example.com"><i class="fas fa-envelope"></i> Invia una Email</a>
+<a class="cta-button" href="https://www.linkedin.com/company/esempio-link" target="_blank"><i class="fab fa-linkedin"></i> LinkedIn</a>
+<a class="cta-button" href="https://github.com/esempio-link" target="_blank"><i class="fab fa-github"></i> GitHub</a>
+</div>
+</section>
+<footer>
+<p>© 2025 Tempestosoh. Tutti i diritti riservati.</p>
+<p>Powered by <a href="https://tempestosoh.github.io/portfolio/homepage.html" target="_blank">Tempestosoh</a></p>
+</footer>
+<button id="backToTop" title="Torna su">↑</button>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<script>
+        // --- Navbar Hamburger Menu ---
+        const hamburger = document.getElementById("hamburger");
+        const navLinks = document.getElementById("nav-links");
+        const body = document.body;
+        
+        if (hamburger && navLinks && body) {
+            hamburger.addEventListener("click", () => {
+                navLinks.classList.toggle("nav-active");
+                hamburger.classList.toggle("active");
+                // NON disabilitare più lo scroll del body, il menu non è a schermo intero
+                // body.classList.toggle("no-scroll"); 
+            });
+
+            document.querySelectorAll('.nav-link-item').forEach(link => {
+                link.addEventListener('click', () => {
+                    // Chiude il menu mobile dopo aver cliccato un link
+                    if (navLinks.classList.contains('nav-active')) {
+                        navLinks.classList.remove("nav-active");
+                        hamburger.classList.remove("active");
+                        // NON disabilitare più lo scroll del body
+                        // body.classList.remove("no-scroll"); 
+                    }
+                });
+            });
+        } else {
+            console.error("Errore: Impossibile trovare gli elementi del menu hamburger. Assicurati che gli ID 'hamburger' e 'nav-links' esistano.");
+        }
+
+        // --- GSAP Animations (Intro & ScrollTriggers) ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Verifica che GSAP sia caricato
+            if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
+                console.error("GSAP o ScrollTrigger non sono caricati. Le animazioni non funzioneranno. Assicurati che gli script siano inclusi e accessibili.");
+                // Rimuovi la classe gsap-active per forzare il fallback CSS
+                document.querySelectorAll('.about-section, .skills-section, .projects-section, .testimonials-section, .faq-section').forEach(section => {
+                    section.classList.remove('gsap-active'); // Forziamo il fallback CSS per la visibilità
+                });
+                return; // Esce dalla funzione se le librerie non sono pronte
+            }
+
+            // Aggiungi una classe alla sezione quando GSAP è attivo
+            // Questo permette alle regole CSS condizionali di agire
+            document.querySelectorAll('.about-section, .skills-section, .projects-section, .testimonials-section, .faq-section').forEach(section => {
+                section.classList.add('gsap-active');
+            });
+
+
+            // Animazione introduttiva per la Hero Section
+            gsap.from(".hero-content .title, .hero-content .subtitle, .hero-content .description, .cta-button", {
+                opacity: 0,
+                y: 50,
+                stagger: 0.2,
+                duration: 1.2,
+                ease: "power3.out",
+                delay: 0.3
+            });
+
+            // Registra il plugin ScrollTrigger
+            gsap.registerPlugin(ScrollTrigger);
+
+            // Animazioni delle sezioni allo scroll con ScrollTrigger
+            gsap.from(".about-item", {
+                scrollTrigger: {
+                    trigger: ".about-section",
+                    start: "top 80%", 
+                    toggleActions: "play none none none" // L'animazione parte una sola volta
+                },
+                opacity: 0,
+                y: 30,
+                stagger: 0.15,
+                duration: 0.8,
+                ease: "power3.out"
+            });
+
+            gsap.from(".skill-card", {
+                scrollTrigger: {
+                    trigger: ".skills-section",
+                    start: "top 80%",
+                    toggleActions: "play none none none"
+                },
+                opacity: 0,
+                y: 30,
+                stagger: 0.15,
+                duration: 0.8,
+                ease: "power3.out"
+            });
+
+            gsap.from(".project-item", {
+                scrollTrigger: {
+                    trigger: ".projects-section",
+                    start: "top 80%",
+                    toggleActions: "play none none none"
+                },
+                opacity: 0,
+                y: 30,
+                stagger: 0.15,
+                duration: 0.8,
+                ease: "power3.out"
+            });
+
+            gsap.from(".testimonial-card", {
+                scrollTrigger: {
+                    trigger: ".testimonials-section",
+                    start: "top 80%",
+                    toggleActions: "play none none none"
+                },
+                opacity: 0,
+                y: 30,
+                stagger: 0.15,
+                duration: 0.8,
+                ease: "power3.out"
+            });
+
+            gsap.from(".faq-item", {
+                scrollTrigger: {
+                    trigger: ".faq-section",
+                    start: "top 80%",
+                    toggleActions: "play none none none"
+                },
+                opacity: 0,
+                y: 30,
+                stagger: 0.1,
+                duration: 0.7,
+                ease: "power3.out"
+            });
+        }); 
+
+
+        // --- Typed.js (Effetto di scrittura per il sottotitolo) ---
+        const typedTextElement = document.getElementById("typed-text");
+        if (typeof Typed !== 'undefined' && typedTextElement) {
+            new Typed("#typed-text", {
+                strings: ["Lorem Ipsum", "Dolor Sit Amet", "Consectetur Adipiscing", "Sed Do Eiusmod", "Tempor Incididunt"],
+                typeSpeed: 70,
+                backSpeed: 40,
+                backDelay: 1800,
+                loop: true
+            });
+        } else {
+            console.warn("Typed.js non è caricato o l'elemento '#typed-text' non è presente. Imposto un testo di fallback.");
+            if (typedTextElement) {
+                 typedTextElement.textContent = "Testo di esempio"; 
+            }
+        }
+
+        // --- Three.js Background Animation (Starfield/Particles) ---
+        const canvas = document.getElementById("bg-canvas");
+        let scene, camera, renderer, particles;
+        let animationFrameId; 
+
+        function var_to_hex(cssVar) {
+            const tempDiv = document.createElement('div');
+            tempDiv.style.color = `var(${cssVar})`;
+            document.body.appendChild(tempDiv);
+            const color = window.getComputedStyle(tempDiv).color;
+            document.body.removeChild(tempDiv);
+            
+            const rgbMatch = color.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+            if (rgbMatch) {
+                return `0x${(1 << 24 | parseInt(rgbMatch[1]) << 16 | parseInt(rgbMatch[2]) << 8 | parseInt(rgbMatch[3])).toString(16).slice(1)}`;
+            }
+            console.warn(`Colore non trovato per ${cssVar}. Usando il nero di default.`);
+            return '0x000000'; 
+        }
+
+        function initThreeJS() {
+            if (!canvas || typeof THREE === 'undefined') {
+                console.warn("Canvas per Three.js non trovato o Three.js non è caricato. L'animazione di sfondo non verrà inizializzata.");
+                return;
+            }
+
+            try {
+                scene = new THREE.Scene();
+                camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.setPixelRatio(window.devicePixelRatio);
+
+                const particleCount = 2500;
+                const positions = new Float32Array(particleCount * 3);
+                const colors = new Float32Array(particleCount * 3);
+
+                const color1 = new THREE.Color(var_to_hex('--primary-accent'));
+                const color2 = new THREE.Color(var_to_hex('--secondary-accent'));
+
+                for (let i = 0; i < particleCount * 3; i += 3) {
+                    positions[i] = (Math.random() - 0.5) * 200;
+                    positions[i + 1] = (Math.random() - 0.5) * 200;
+                    positions[i + 2] = (Math.random() - 0.5) * 200;
+
+                    const mix = Math.random();
+                    const mixedColor = new THREE.Color();
+                    mixedColor.lerpColors(color1, color2, mix);
+                    colors[i] = mixedColor.r;
+                    colors[i + 1] = mixedColor.g;
+                    colors[i + 2] = mixedColor.b;
+                }
+
+                const geometry = new THREE.BufferGeometry();
+                geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+                const material = new THREE.PointsMaterial({
+                    size: 0.35,
+                    vertexColors: true, 
+                    transparent: true,
+                    opacity: 0.9,
+                    blending: THREE.AdditiveBlending 
+                });
+
+                particles = new THREE.Points(geometry, material);
+                scene.add(particles);
+
+                camera.position.z = 100;
+            } catch (e) {
+                console.error("Errore nell'inizializzazione di Three.js:", e);
+                // Pulizia in caso di errore
+                if (animationFrameId) cancelAnimationFrame(animationFrameId);
+                scene = null;
+                camera = null;
+                renderer = null;
+                particles = null;
+            }
+        }
+
+        function animateThreeJS() {
+            if (!renderer || !scene || !camera) {
+                if (animationFrameId) cancelAnimationFrame(animationFrameId);
+                return; 
+            }
+
+            animationFrameId = requestAnimationFrame(animateThreeJS);
+
+            if (particles) {
+                particles.rotation.x += 0.0001;
+                particles.rotation.y += 0.0002;
+                particles.rotation.z += 0.0001;
+            }
+            
+            const mouseX = (window.mouseX || 0) / window.innerWidth - 0.5;
+            const mouseY = (window.mouseY || 0) / window.innerHeight - 0.5;
+            camera.position.x += (mouseX * 5 - camera.position.x) * 0.01;
+            camera.position.y += (-mouseY * 5 - camera.position.y) * 0.01;
+            camera.lookAt(scene.position);
+
+            renderer.render(scene, camera);
+        }
+
+        function onWindowResizeThreeJS() {
+            if (camera && renderer) {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+        }
+
+        window.addEventListener('resize', onWindowResizeThreeJS);
+        window.addEventListener('mousemove', (event) => {
+            window.mouseX = event.clientX;
+            window.mouseY = event.clientY;
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof THREE !== 'undefined') {
+                initThreeJS();
+                animateThreeJS();
+            } else {
+                console.warn("Three.js non è caricato. L'animazione di sfondo non verrà eseguita.");
+            }
+        });
+
+        // --- Preloader Fade Out e Animazioni al Caricamento ---
+        window.addEventListener("load", () => {
+            const preloader = document.getElementById("preloader");
+            if (preloader) {
+                preloader.classList.add("fade-out");
+                setTimeout(() => preloader.remove(), 500);
+            } else {
+                 console.warn("Elemento #preloader non trovato.");
+            }
+        });
+
+        // --- Smooth Scroll per i link interni ---
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    const offset = document.querySelector('nav').offsetHeight; 
+                    const elementPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
+                    const offsetPosition = elementPosition - offset;
+
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // --- Pulsante Back To Top ---
+        const backToTop = document.getElementById("backToTop");
+        if (backToTop) {
+            window.addEventListener("scroll", () => {
+                backToTop.style.display = window.scrollY > 300 ? "block" : "none";
+            });
+
+            backToTop.addEventListener("click", () => {
+                window.scrollTo({ top: 0, behavior: "smooth" });
+            });
+        } else {
+            console.warn("Elemento #backToTop non trovato.");
+        }
+
+        // --- Testimonials Carousel Navigation & Auto-Scroll ---
+        const testimonialCarousel = document.querySelector('.testimonial-carousel');
+        const prevButton = document.getElementById('prevTestimonial');
+        const nextButton = document.getElementById('nextTestimonial');
+        let currentTestimonialIndex = 0;
+        let testimonialCards = [];
+        let autoScrollInterval;
+
+        function updateCarouselPosition() {
+            if (testimonialCards.length === 0 || !testimonialCarousel) return;
+            // Adjust for gap (1.5rem = 24px default)
+            const cardWidth = testimonialCards[0].offsetWidth; 
+            const scrollDistance = cardWidth + 24; // Card width + gap
+
+            testimonialCarousel.scrollTo({
+                left: currentTestimonialIndex * scrollDistance,
+                behavior: 'smooth'
+            });
+        }
+
+        function setupCarousel() {
+            if (!testimonialCarousel) {
+                console.warn("Elemento .testimonial-carousel non trovato.");
+                return;
+            }
+            testimonialCards = Array.from(testimonialCarousel.children).filter(child => child.classList.contains('testimonial-card'));
+
+            if (prevButton && nextButton) {
+                prevButton.addEventListener('click', () => {
+                    stopAutoScroll(); 
+                    currentTestimonialIndex = (currentTestimonialIndex > 0) ? currentTestimonialIndex - 1 : testimonialCards.length - 1;
+                    updateCarouselPosition();
+                });
+
+                nextButton.addEventListener('click', () => {
+                    stopAutoScroll(); 
+                    currentTestimonialIndex = (currentTestimonialIndex < testimonialCards.length - 1) ? currentTestimonialIndex + 1 : 0;
+                    updateCarouselPosition();
+                });
+            } else {
+                 console.warn("Elementi di navigazione del carosello non trovati (prevTestimonial, nextTestimonial).");
+            }
+
+            if (testimonialCards.length > 1) {
+                startAutoScroll(); 
+            } else {
+                if (prevButton) prevButton.style.display = 'none';
+                if (nextButton) nextButton.style.display = 'none';
+            }
+            // Ensure first card is visible on load
+            updateCarouselPosition(); 
+        }
+
+        function startAutoScroll() {
+            stopAutoScroll(); 
+            autoScrollInterval = setInterval(() => {
+                currentTestimonialIndex = (currentTestimonialIndex < testimonialCards.length - 1) ? currentTestimonialIndex + 1 : 0;
+                updateCarouselPosition();
+            }, 5000); 
+        }
+
+        function stopAutoScroll() {
+            if (autoScrollInterval) {
+                clearInterval(autoScrollInterval);
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', setupCarousel);
+
+
+        // --- FAQ Accordion Logic (Semplificata) ---
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', () => {
+                const answer = question.nextElementSibling;
+                const icon = question.querySelector('i');
+
+                const isOpen = question.classList.contains('active');
+
+                // Chiudi tutte le altre FAQ aperte
+                document.querySelectorAll('.faq-question.active').forEach(activeQuestion => {
+                    if (activeQuestion !== question) { 
+                        activeQuestion.classList.remove('active');
+                        activeQuestion.querySelector('i').classList.remove('fa-minus');
+                        activeQuestion.querySelector('i').classList.add('fa-plus');
+                        activeQuestion.nextElementSibling.style.maxHeight = '0px';
+                        activeQuestion.nextElementSibling.style.paddingBottom = '0px';
+                    }
+                });
+
+                // Apri o chiudi la FAQ cliccata
+                if (isOpen) {
+                    question.classList.remove('active');
+                    icon.classList.remove('fa-minus');
+                    icon.classList.add('fa-plus');
+                    answer.style.maxHeight = '0px';
+                    answer.style.paddingBottom = '0px';
+                } else {
+                    question.classList.add('active');
+                    icon.classList.remove('fa-plus');
+                    icon.classList.add('fa-minus');
+                    // Imposta una max-height sufficientemente grande per contenere il contenuto
+                    // Usiamo scrollHeight per calcolare l'altezza effettiva del contenuto
+                    answer.style.maxHeight = answer.scrollHeight + "px"; 
+                    answer.style.paddingBottom = '1.5rem';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
